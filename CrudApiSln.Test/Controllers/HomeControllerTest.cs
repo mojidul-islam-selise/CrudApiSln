@@ -1,5 +1,6 @@
 ﻿using CrudApiSln.Controllers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,6 +53,54 @@ namespace CrudApiSln.Test.Controllers
 
             //Assert
             Assert.Equal(expectedResult, result);
+        }
+
+        //if the methods have parameter then we use theory
+        [Theory]
+        [InlineData(80, "Wrong! Your guess is low!")]
+        [InlineData(100, "Your guess is correct!")]
+        [InlineData(120, "Wrong! Your guess is High!")]
+        public void HomeController_Index_ValidNumberResult(int number, string expectedResultInput)
+        {
+            //Arrange
+            HomeController homeController = new HomeController();
+            int guessNumber = number;            
+
+            //Act
+            string result = homeController.Index(guessNumber);
+
+            //Assert
+            Assert.Equal(expectedResultInput, result);
+        }
+
+        [Theory]
+        [ClassData(typeof (ValidNumberCollection))]
+        public void HomeController_Index_ValidNumberUsingClassDataResult(int number, string expectedResultInput)
+        {
+            //Arrange
+            HomeController homeController = new HomeController();
+            int guessNumber = number;
+
+            //Act
+            string result = homeController.Index(guessNumber);
+
+            //Assert
+            Assert.Equal(expectedResultInput, result);
+        }
+    }
+
+    public class ValidNumberCollection: IEnumerable<object[]>
+    {
+        public IEnumerator<object[]> GetEnumerator()
+        {
+            yield return new object[] { 80, "Wrong! Your guess is low!" };
+            yield return new object[] { 100, "Your guess is correct!" };
+            yield return new object[] { 120, "Wrong! Your guess is High!" };
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
