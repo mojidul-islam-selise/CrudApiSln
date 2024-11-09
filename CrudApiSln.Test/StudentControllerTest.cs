@@ -2,6 +2,8 @@
 using CrudApiSln.DTOs;
 using CrudApiSln.Models;
 using CrudApiSln.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace CrudApiSln.Test
@@ -87,6 +89,30 @@ namespace CrudApiSln.Test
             //Assert.Equal(200, resultType.StatusCode);
         }
 
+        [Fact]
+        public async void AddStudent_AddStudentCorrectly()
+        {
+            // Arrange
+            var newStudent = new StudentDto
+            {
+                Id = 4,
+                Name = "Book Test 4",
+                Department = "CSE",
+                Section = "B",
+                DateOfBirth = new DateOnly(1995, 8, 19),
+                Age = 30.5f,
+                Address = "Dhaka, Bangladesh"
+            };
+            studentService.Setup(service => service.AddStudent(newStudent)).ReturnsAsync(newStudent);
+
+            // Act
+            var result = studentController.CreateStudent(newStudent) as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result); // Check that the student was added and returned
+            Assert.True((bool)result?.Value); // Check that the return value is true
+            Assert.Equal(200, result?.StatusCode); // Check that the status code is correct
+        }
 
         private List<StudentDto> GetStudentsData()
         {

@@ -16,12 +16,17 @@ namespace CrudApiSln.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<bool>> CreateStudent(StudentDto student)
+        public IActionResult CreateStudent(StudentDto student)
         {
+            bool result = false;
             try
             {
-                var response = await _studentService.AddStudent(student);
-                return Ok(response);
+                var response = _studentService.AddStudent(student);
+                if (response != null)
+                {
+                    result = true;
+                }
+                return Ok(result);
             }
             catch (Exception ex)
             {
