@@ -16,12 +16,12 @@ namespace CrudApiSln.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateStudent(StudentDto student)
+        public async Task<IActionResult> CreateStudent(StudentDto student)
         {
             bool result = false;
             try
             {
-                var response = _studentService.AddStudent(student);
+                var response = await _studentService.AddStudent(student);
                 if (response != null)
                 {
                     result = true;
@@ -49,12 +49,17 @@ namespace CrudApiSln.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<bool>> UpdateStudent(int id, StudentDto student)
+        public async Task<IActionResult> UpdateStudent(int id, StudentDto student)
         {
             try
             {
+                bool result = false;
                 var response = await _studentService.UpdateStudent(id, student);
-                return Ok(response);
+                if (response != null)
+                {
+                    result = true;
+                }
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -63,12 +68,17 @@ namespace CrudApiSln.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult<bool>> DeleteStudent(int id)
+        public async Task<IActionResult> DeleteStudent(int id)
         {
             try
             {
+                bool result = false;
                 var response = await _studentService.DeleteStudent(id);
-                return Ok(response);
+                if (response != null && response.Id>0)
+                {
+                    result = true;
+                }
+                return Ok(result);
             }
             catch (Exception ex)
             {

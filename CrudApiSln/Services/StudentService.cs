@@ -1,6 +1,5 @@
 ﻿using CrudApiSln.Repositories;
 using CrudApiSln.DTOs;
-using CrudApiSln.Models;
 
 namespace CrudApiSln.Services
 {
@@ -10,11 +9,11 @@ namespace CrudApiSln.Services
         public StudentService(IStudentRepository studentRepository) { 
             _studentRepository = studentRepository;
         }
-        public Task<StudentDto> AddStudent(StudentDto student)
+        public async Task<StudentDto> AddStudent(StudentDto student)
         {
             try
             {
-                return _studentRepository.AddStudent(student);
+                return await _studentRepository.AddStudent(student);
             }
             catch (Exception ex)
             {
@@ -22,11 +21,16 @@ namespace CrudApiSln.Services
             }
         }
 
-        public Task<StudentDto> DeleteStudent(int id)
+        public async Task<StudentDto> DeleteStudent(int id)
         {
             try
             {
-                return _studentRepository.DeleteStudent(id);
+                var student = await _studentRepository.GetStudentById(id);
+                if (student == null || student.Id == 0)
+                {
+                    throw new Exception("Student not Found!");
+                }
+                return await _studentRepository.DeleteStudent(id);
             }
             catch (Exception ex)
             {
@@ -34,11 +38,16 @@ namespace CrudApiSln.Services
             }
         }
 
-        public Task<StudentDto> GetStudentById(int id)
+        public async Task<StudentDto> GetStudentById(int id)
         {
             try
             {
-                return _studentRepository.GetStudentById(id);
+                var student = await _studentRepository.GetStudentById(id);
+                if (student == null || student.Id == 0)
+                {
+                    throw new Exception("Student not Found!");
+                }
+                return student;
             }
             catch (Exception ex)
             {
@@ -46,11 +55,11 @@ namespace CrudApiSln.Services
             }
         }
 
-        public Task<List<StudentDto>> GetStudents()
+        public async Task<List<StudentDto>> GetStudents()
         {
             try
             {
-                return _studentRepository.GetStudents();
+                return await _studentRepository.GetStudents();
             }
             catch (Exception ex)
             {
@@ -58,11 +67,11 @@ namespace CrudApiSln.Services
             }
         }
 
-        public Task<StudentDto> UpdateStudent(int id, StudentDto student)
+        public async Task<StudentDto> UpdateStudent(int id, StudentDto student)
         {
             try
             {
-                return _studentRepository.UpdateStudent(id, student);
+                return await _studentRepository.UpdateStudent(id, student);
             }
             catch (Exception ex)
             {

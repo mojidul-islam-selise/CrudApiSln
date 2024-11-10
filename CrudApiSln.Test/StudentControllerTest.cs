@@ -2,6 +2,7 @@
 using CrudApiSln.DTOs;
 using CrudApiSln.Models;
 using CrudApiSln.Services;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -90,7 +91,7 @@ namespace CrudApiSln.Test
         }
 
         [Fact]
-        public async void AddStudent_AddStudentCorrectly()
+        public async Task AddStudent_AddStudentCorrectly()
         {
             // Arrange
             var newStudent = new StudentDto
@@ -106,12 +107,64 @@ namespace CrudApiSln.Test
             studentService.Setup(service => service.AddStudent(newStudent)).ReturnsAsync(newStudent);
 
             // Act
-            var result = studentController.CreateStudent(newStudent) as OkObjectResult;
+            var result = await studentController.CreateStudent(newStudent) as OkObjectResult;
 
             // Assert
             Assert.NotNull(result); // Check that the student was added and returned
             Assert.True((bool)result?.Value); // Check that the return value is true
             Assert.Equal(200, result?.StatusCode); // Check that the status code is correct
+        }
+
+        [Fact]
+        public async Task UpdateStudent_UpdateStudentCorrectly()
+        {
+            // Arrange
+            int id = 3;
+            var editStudent = new StudentDto
+            {
+                Id = 3,
+                Name = "Book Test 3 Update",
+                Department = "CSE",
+                Section = "B",
+                DateOfBirth = new DateOnly(1995, 8, 19),
+                Age = 30.5f,
+                Address = "Badda, Dhaka, Bangladesh"
+            };
+            studentService.Setup(service => service.UpdateStudent(id, editStudent)).ReturnsAsync(editStudent);
+
+            // Act
+            var result = await studentController.UpdateStudent(id, editStudent) as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result); // Check that the student was added and returned
+            Assert.True((bool)result?.Value); // Check that the return value is true
+            Assert.Equal(200, result?.StatusCode); // Check that the status code is correct
+        }
+
+        [Fact]
+        public async Task DeleteStudent_DeleteStudentCorrectly()
+        {
+            // Arrange
+            int id = 3;//pass
+            //int id = 6;//fail
+            var students = GetStudentsData();
+            var expectedStudent = students.FirstOrDefault(x => x.Id == id);
+            studentService.Setup(service => service.DeleteStudent(id)).ReturnsAsync(expectedStudent);
+
+            // Act
+            //var result = studentController.DeleteStudent(id) as OkObjectResult;
+            var result = await studentController.DeleteStudent(id);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+            result.Should().NotBeNull();
+            //Assert.NotNull(result); // Check that the student was added and returned
+            //Assert.True((bool)result?.Value); // Check that the return value is true
+            result.Should().BeAssignableTo<OkObjectResult>();
+            //result?.Should().Equals(200)); // Check that the status code is correct
+            result.As<OkObjectResult>().Value
+                .Should().NotBeNull()
+                .And.Be(true);
         }
 
         private List<StudentDto> GetStudentsData()
@@ -128,7 +181,7 @@ namespace CrudApiSln.Test
                     Age = 30.5f,
                     Address = "Dhaka, Bangladesh"
                 },
-                 new StudentDto
+                new StudentDto
                 {
                     Id = 2,
                     Name = "Book Test 2",
@@ -138,7 +191,7 @@ namespace CrudApiSln.Test
                     Age = 30.5f,
                     Address = "Dhaka, Bangladesh"
                 },
-                 new StudentDto
+                new StudentDto
                 {
                     Id = 3,
                     Name = "Book Test 3",
