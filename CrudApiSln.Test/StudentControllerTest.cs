@@ -1,9 +1,7 @@
 ﻿using CrudApiSln.Controllers;
 using CrudApiSln.DTOs;
-using CrudApiSln.Models;
 using CrudApiSln.Services;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -167,7 +165,7 @@ namespace CrudApiSln.Test
                 .And.Be(true);
         }
 
-        private List<StudentDto> GetStudentsData()
+        public List<StudentDto> GetStudentsData()
         {
             List<StudentDto> studentData = new List<StudentDto>
             {
